@@ -12,31 +12,41 @@ const client = new MongoClient(MONGO_URL);
 
 //GET all users
 app.get("/getUsers", async (req, res) => {
-    await client.connect(URL);
-    console.log('Connected successfully to server');
+  try {
+    await client.connect(MONGO_URL);
+    console.log("Connected successfully to server");
 
     const db = client.db("apnacollege-db");
-    const data = await db.collection('users').find({}).toArray();
-    
+    const data = await db.collection("users").find({}).toArray();
+
     client.close();
     res.send(data);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send({ message: "Error fetching users" });
+  }
 });
 
 //POST new user
 app.post("/addUser", async (req, res) => {
+  try {
     const userObj = req.body;
     console.log(req.body);
-    await client.connect(URL);
-    console.log('Connected successfully to server');
+    await client.connect(MONGO_URL);
+    console.log("Connected successfully to server");
 
     const db = client.db("apnacollege-db");
-    const data = await db.collection('users').insertOne(userObj);
+    const data = await db.collection("users").insertOne(userObj);
     console.log(data);
     console.log("data inserted in DB");
     client.close();
+    res.send({ message: "User added successfully" });
+  } catch (error) {
+    console.error("Error adding user:", error);
+    res.status(500).send({ message: "Error adding user" });
+  }
 });
 
-
 app.listen(PORT, () => {
-    console.log(`server running on port ${PORT}`);
+  console.log(`server running on port http://localhost:${PORT}`);
 });
